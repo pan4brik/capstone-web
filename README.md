@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# capstone-web
 
-## Getting Started
+A Next.js (App Router) frontend for
+[capstone-api](https://github.com/pan4brik/capstone-api). The home page fetches
+the notes list from the backend on the server and renders it. One page,
+TypeScript, Tailwind.
 
-First, run the development server:
+## Requirements
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js 20 or newer — check with `node --version`. If your system version is
+  older, install a current one with nvm, fnm, or Volta (all cross-platform).
+- pnpm. The repo pins an exact pnpm version in `package.json` (the
+  `packageManager` field), so the most reliable way is Corepack, which ships
+  with Node:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+      corepack enable pnpm      # may need sudo on Linux
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+  If that fails, install it directly: `npm install -g pnpm`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Run it
 
-## Learn More
+Start the backend first — it must be reachable at `http://localhost:8000`
+(see capstone-api), or the page throws when it loads.
 
-To learn more about Next.js, take a look at the following resources:
+    git clone https://github.com/pan4brik/capstone-web.git
+    cd capstone-web
+    pnpm install
+    pnpm dev
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open http://localhost:3000.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+For a production build: `pnpm build`, then `pnpm start`.
 
-## Deploy on Vercel
+## Known gaps
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- The backend URL is hard-coded to `http://localhost:8000` in `app/page.tsx`;
+  it needs to move to an environment variable before this can deploy.
