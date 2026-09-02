@@ -1,11 +1,9 @@
 import Image from "next/image";
 
-type Note = { title: string }
+import { getNotes } from "@/app/lib/api";
 
 export default async function Home() {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
-  const data = await fetch(`${API_URL}/notes`)
-  const notes: Note[] = await data.json()
+  const notes = await getNotes()
 
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
