@@ -15,7 +15,18 @@ export function writeHeaders(): HeadersInit {
 
 // RSC helper — called from the server component that renders the list.
 export async function getNotes(): Promise<Note[]> {
-  const res = await fetch(`${API_BASE_URL}/notes`, { cache: "no-store" });
-  if (!res.ok) throw new Error(`GET /notes failed: ${res.status}`);
-  return res.json();
+  const controller = new AbortController();
+  // Aborts a few seconds under the page's maxDuration, so a hung backend
+  // lands in the page's fallback UI instead of a platform-level timeout.
+  const timeout = setTimeout(() => controller.abort(), 55_000);
+  try {
+    const res = await fetch(`${API_BASE_URL}/notes`, {
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    if (!res.ok) throw new Error(`GET /notes failed: ${res.status}`);
+    return res.json();
+  } finally {
+    clearTimeout(timeout);
+  }
 }

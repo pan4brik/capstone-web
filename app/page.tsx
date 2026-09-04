@@ -4,6 +4,8 @@ import { siteConfig } from "@/app/config";
 import { NoteForm } from "@/app/note-form";
 import { AskBox } from "@/app/ask-box";
 
+export const maxDuration = 60;
+
 export default async function Home() {
   let notes: Note[] | null = null;
   try {
