@@ -1,75 +1,75 @@
-import Image from "next/image";
-
-import { getNotes } from "@/app/lib/api";
+import Link from "next/link";
+import { getNotes, type Note } from "@/app/lib/api";
+import { siteConfig } from "@/app/config";
+import { NoteForm } from "@/app/note-form";
+import { AskBox } from "@/app/ask-box";
 
 export default async function Home() {
-  const notes = await getNotes()
+  let notes: Note[] | null = null;
+  try {
+    notes = await getNotes();
+  } catch {
+    notes = null;
+  }
 
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-          <ul>
-            {notes.map((note) => <li key={note.title}>{note.title}</li>)}
-          </ul>
-        </div>
+    <div className="flex flex-1 justify-center bg-[var(--color-background)] font-sans">
+      <main
+        className="flex w-full flex-col gap-8 px-6 py-16"
+        style={{ maxWidth: "var(--container-max)" }}
+      >
+        <header className="flex flex-col gap-1">
+          <h1 className="text-2xl font-semibold">{siteConfig.name}</h1>
+          <p className="text-sm text-[var(--color-accent)]">{siteConfig.role}</p>
+          <div className="mt-2 flex gap-4 text-sm underline underline-offset-4">
+            <a href={siteConfig.apiRepoUrl}>capstone-api</a>
+            <a href={siteConfig.webRepoUrl}>capstone-web</a>
+            <a href={siteConfig.resumeUrl}>résumé</a>
+          </div>
+        </header>
+
+        <section className="flex flex-col gap-3">
+          <h2 className="text-lg font-medium">Notes</h2>
+          {notes === null ? (
+            <p className="rounded-[var(--radius-card)] border border-[var(--color-border)] p-4 text-sm">
+              Waking the server — this can take up to a minute on the free tier.{" "}
+              <Link href="/" className="underline underline-offset-4">
+                Retry
+              </Link>
+            </p>
+          ) : notes.length === 0 ? (
+            <p className="text-sm text-zinc-500">No notes yet — add one below.</p>
+          ) : (
+            <>
+              <ul className="flex flex-col gap-2">
+                {notes.map((note) => (
+                  <li
+                    key={note.id}
+                    className="rounded-[var(--radius-card)] border border-[var(--color-border)] p-3"
+                  >
+                    <p className="font-medium">{note.title}</p>
+                    {note.body && (
+                      <p className="mt-1 text-sm text-zinc-500">{note.body}</p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs text-zinc-500">
+                This is a demo — note data resets periodically.
+              </p>
+            </>
+          )}
+        </section>
+
+        <section className="flex flex-col gap-3">
+          <h2 className="text-lg font-medium">Add a note</h2>
+          <NoteForm />
+        </section>
+
+        <section className="flex flex-col gap-3">
+          <h2 className="text-lg font-medium">Ask about my notes</h2>
+          <AskBox />
+        </section>
       </main>
     </div>
   );
