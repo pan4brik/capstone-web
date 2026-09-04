@@ -20,7 +20,8 @@ TypeScript, Tailwind.
 ## Run it
 
 Start the backend first — it must be reachable at `http://localhost:8000`
-(see capstone-api), or the page throws when it loads.
+(see capstone-api). If it isn't, the home page still renders, with a
+"waking the server" fallback in place of the notes list.
 
     git clone https://github.com/pan4brik/capstone-web.git
     cd capstone-web
@@ -31,7 +32,10 @@ Open http://localhost:3000.
 
 For a production build: `pnpm build`, then `pnpm start`.
 
-## Known gaps
+## Configuration
 
-- The backend URL is hard-coded to `http://localhost:8000` in `app/page.tsx`;
-  it needs to move to an environment variable before this can deploy.
+- `API_BASE_URL` — origin of the capstone-api backend. Defaults to
+  `http://localhost:8000`.
+- `BFF_SHARED_SECRET` — sent as `X-BFF-Secret` on backend requests, if set.
+- `NEXT_PUBLIC_SITE_URL` — used as `metadataBase` for OG tags. Defaults to
+  `http://localhost:3000`.
