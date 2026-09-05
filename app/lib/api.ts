@@ -22,6 +22,7 @@ export async function getNotes(): Promise<Note[]> {
   try {
     const res = await fetch(`${API_BASE_URL}/notes`, {
       cache: "no-store",
+      headers: writeHeaders(),
       signal: controller.signal,
     });
     if (!res.ok) throw new Error(`GET /notes failed: ${res.status}`);
