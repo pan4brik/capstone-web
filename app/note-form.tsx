@@ -28,10 +28,7 @@ export function NoteForm() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="w-full flex flex-col gap-3 rounded-[var(--radius-card)] border border-[var(--color-border)] p-4"
-    >
+    <form onSubmit={handleSubmit} className="w-full flex flex-col gap-3">
       <input
         type="text"
         placeholder="Title"
@@ -52,7 +49,7 @@ export function NoteForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="self-start rounded-[var(--radius-card)] bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+        className="self-start rounded-[var(--radius-card)] bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-[var(--color-on-accent)] transition-colors hover:bg-[color-mix(in_oklch,var(--color-accent)_88%,black)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-accent)] focus-visible:outline-offset-2 disabled:opacity-50"
       >
         {isPending ? "Adding…" : "Add note"}
       </button>
