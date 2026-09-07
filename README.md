@@ -5,6 +5,30 @@ A Next.js (App Router) frontend for
 the notes list from the backend on the server and renders it. One page,
 TypeScript, Tailwind.
 
+**Live:** https://capstone.pobemas.com/
+
+## Features
+
+- Server-rendered notes list, fetched from the backend on each request.
+- Add a note (client form, calls a Server Action).
+- Ask a question grounded only in the stored notes, answered via the Gemini
+  API (`/ask`, backend-side).
+- Résumé link, source links to both repos.
+
+## Architecture
+
+```
+Browser ──HTTP──▶ Next.js on Vercel
+                   ├─ RSC: server-side fetch  ─────▶ FastAPI /notes        (GET, list)
+                   └─ Server Actions ────────────────▶ FastAPI /notes       (POST, create)
+                                                     └▶ FastAPI /ask        (POST, LLM)
+                                                          └─ httpx ────────▶ Gemini REST
+FastAPI on Render ── repository interface ──▶ in-memory (v1)
+```
+
+Browser talks only to Vercel — no CORS. `GEMINI_API_KEY` lives only on Render;
+`BFF_SHARED_SECRET` (optional) is set on both Vercel and Render.
+
 ## Requirements
 
 - Node.js 20 or newer — check with `node --version`. If your system version is
@@ -39,3 +63,24 @@ For a production build: `pnpm build`, then `pnpm start`.
 - `BFF_SHARED_SECRET` — sent as `X-BFF-Secret` on backend requests, if set.
 - `NEXT_PUBLIC_SITE_URL` — used as `metadataBase` for OG tags. Defaults to
   `http://localhost:3000`.
+
+## Operating this
+
+Notes for running the live deployment unattended over long stretches (e.g.
+between interviews):
+
+- **Env vars:** Render — `GEMINI_API_KEY`, `BFF_SHARED_SECRET`. Vercel —
+  `API_BASE_URL`, `BFF_SHARED_SECRET`.
+- **Spend cap:** the app-side `slowapi` limit on `/ask` (shared with
+  `POST /notes`) is the hard bound. Also: Google Cloud console → IAM & Admin →
+  Quotas → the Gemini API request override; Billing → Budgets & alerts
+  (notify-only). Check monthly. Model is pinned to `gemini-flash-lite-latest`
+  (see [capstone-api's README](https://github.com/pan4brik/capstone-api) for
+  the manual fallback if that model is ever deprecated).
+- **Warm before a demo/interview:** hit
+  `https://capstone-api-f54u.onrender.com/health` once, ~1 minute ahead — Render's
+  free tier cold-starts after inactivity.
+- **Reseed:** restart the Render service — notes are in-memory and reset on
+  restart.
+- **Rotate the BFF secret:** change `BFF_SHARED_SECRET` in Render **and**
+  Vercel together, then redeploy both.
