@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "Nattapong Srisai",
+  name: "Pannathorn Brikshavana",
   role: "Junior Software Engineer",
   tagline: "Notes app with an LLM-backed Q&A endpoint",
   githubUser: "pan4brik",
