@@ -5,5 +5,5 @@ export const siteConfig = {
   githubUser: "pan4brik",
   apiRepoUrl: "https://github.com/pan4brik/capstone-api",
   webRepoUrl: "https://github.com/pan4brik/capstone-web",
-  resumeUrl: "/Nattapong_Srisai_SWE_Resume.pdf",
+  resumeUrl: "/resume",
 };
