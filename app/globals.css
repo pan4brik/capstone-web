@@ -1,35 +1,75 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --accent: #2563eb;
-  --border: #e4e4e7;
-  --radius-card: 0.5rem;
+  --background: oklch(99% 0.002 240);
+  --surface: oklch(100% 0 0);
+  --foreground: oklch(18% 0.012 250);
+  --muted: oklch(54% 0.012 250);
+  --border: oklch(92% 0.005 250);
+  --accent: oklch(68% 0.17 55);
+  --accent-2: oklch(60% 0.14 155);
+  /* darker amber for direct-text use — --accent itself is too light for AA text contrast on --background */
+  --accent-text: oklch(50% 0.17 55);
+  /* fixed dark text for content sitting on the --accent swatch (buttons); --accent is light in both themes */
+  --on-accent: oklch(20% 0.03 55);
+  --radius-card: 0.625rem;
   --container-max: 42rem;
+}
+
+[data-theme="dark"] {
+  --background: oklch(16% 0.012 250);
+  --surface: oklch(21% 0.014 250);
+  --foreground: oklch(96% 0.004 240);
+  --muted: oklch(68% 0.014 250);
+  --border: oklch(31% 0.016 250);
+  --accent: oklch(74% 0.15 55);
+  --accent-2: oklch(68% 0.13 155);
+  /* --accent already passes AA as text against the dark background here */
+  --accent-text: oklch(74% 0.15 55);
+}
+
+/* no-JS fallback only — the theme-init script normally sets [data-theme] before paint */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --background: oklch(16% 0.012 250);
+    --surface: oklch(21% 0.014 250);
+    --foreground: oklch(96% 0.004 240);
+    --muted: oklch(68% 0.014 250);
+    --border: oklch(31% 0.016 250);
+    --accent: oklch(74% 0.15 55);
+    --accent-2: oklch(68% 0.13 155);
+    --accent-text: oklch(74% 0.15 55);
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-text: var(--accent-text);
+  --color-on-accent: var(--on-accent);
   --color-border: var(--border);
   --radius-card: var(--radius-card);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --accent: #60a5fa;
-    --border: #27272a;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+
+/* theme-toggle icon swap — driven by [data-theme] on <html>, set in layout.tsx */
+.theme-icon-moon {
+  display: none;
+}
+[data-theme="dark"] .theme-icon-sun {
+  display: none;
+}
+[data-theme="dark"] .theme-icon-moon {
+  display: block;
 }
