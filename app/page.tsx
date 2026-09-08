@@ -3,7 +3,6 @@ import { getNotes, type Note } from "@/app/lib/api";
 import { siteConfig } from "@/app/config";
 import { NoteForm } from "@/app/note-form";
 import { AskBox } from "@/app/ask-box";
-import { ThemeToggle } from "@/app/theme-toggle";
 
 export const maxDuration = 60;
 
@@ -16,122 +15,170 @@ export default async function Home() {
   }
 
   return (
-    <div className="flex flex-1 justify-center bg-[var(--color-background)] font-sans">
-      <main
-        className="flex w-full flex-col gap-8 px-6 py-16"
-        style={{ maxWidth: "var(--container-max)" }}
-      >
-        <header className="flex flex-col gap-1">
-          <p className="font-mono text-xs tracking-wide text-[var(--color-accent-text)] uppercase">
-            Capstone project
+    <main id="content" className="flex-1">
+      <section className="section hero" data-od-id="hero">
+        <div className="container hero-center">
+          <p className="eyebrow">Capstone project</p>
+          <h1 className="h1">A notes app that can answer questions about your notes.</h1>
+          <p className="lead">
+            Built by {siteConfig.name} — Next.js on the front end, FastAPI and Gemini on the
+            back end. Try it below, or read the source.
           </p>
-          <h1 className="text-2xl font-semibold">{siteConfig.name}</h1>
-          <p className="text-sm text-[var(--color-accent-text)]">{siteConfig.role}</p>
-          <p className="mt-1 text-sm text-[var(--color-muted)]">{siteConfig.tagline}</p>
-          <div className="mt-2 flex items-center justify-between gap-4 text-sm">
-            <div className="flex gap-4 underline underline-offset-4">
-              <a href={siteConfig.apiRepoUrl}>capstone-api</a>
-              <a href={siteConfig.webRepoUrl}>capstone-web</a>
-              <a href={siteConfig.resumeUrl}>résumé</a>
-            </div>
-            <ThemeToggle />
+          <div className="hero-cta">
+            <a href="#demo" className="btn btn-primary" data-od-id="hero-cta-primary">
+              Try the live demo
+            </a>
+            <a
+              href={siteConfig.webRepoUrl}
+              target="_blank"
+              rel="noopener"
+              className="btn btn-secondary"
+            >
+              View source
+            </a>
           </div>
-        </header>
-
-        <div className="flex flex-col divide-y divide-[var(--color-border)] rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)]">
-          <section className="flex flex-col gap-3 p-5">
-            <h2 className="text-lg font-medium">Notes</h2>
-            {notes === null ? (
-              <p className="rounded-[var(--radius-card)] border border-[var(--color-border)] p-4 text-sm">
-                Waking the server — this can take up to a minute on the free tier.{" "}
-                <Link href="/" className="underline underline-offset-4">
-                  Retry
-                </Link>
-              </p>
-            ) : notes.length === 0 ? (
-              <p className="text-sm text-[var(--color-muted)]">No notes yet — add one below.</p>
-            ) : (
-              <>
-                <ul className="flex flex-col gap-2">
-                  {notes.map((note) => (
-                    <li
-                      key={note.id}
-                      className="rounded-[var(--radius-card)] border border-[var(--color-border)] p-3"
-                    >
-                      <p className="font-medium">{note.title}</p>
-                      {note.body && (
-                        <p className="mt-1 text-sm text-[var(--color-muted)]">{note.body}</p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-                <p className="text-xs text-[var(--color-muted)]">
-                  This is a demo — note data resets periodically.
-                </p>
-              </>
-            )}
-          </section>
-
-          <section className="flex flex-col gap-3 p-5">
-            <h2 className="text-lg font-medium">Add a note</h2>
-            <NoteForm />
-          </section>
-
-          <section className="flex flex-col gap-3 p-5">
-            <h2 className="text-lg font-medium">Ask about my notes</h2>
-            <AskBox />
-          </section>
         </div>
+      </section>
 
-        <section className="flex flex-col gap-4">
-          <h2 className="text-lg font-medium">How it&apos;s built</h2>
-          <ul className="flex flex-col gap-4">
-            <li className="flex gap-3">
-              <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--radius-card)] border border-[var(--color-border)] text-[var(--color-accent)]">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <section className="section" id="demo" data-od-id="demo">
+        <div className="container">
+          <div className="row-between" style={{ marginBottom: 28, flexWrap: "wrap" }}>
+            <h2 className="h2">Add a note, then ask about it.</h2>
+            <span className="tag tag-accent2">● Live · calls the deployed backend</span>
+          </div>
+          <div className="card">
+            <div className="demo-block">
+              <h3 className="h3" style={{ marginBottom: 14 }}>
+                Notes
+              </h3>
+              {notes === null ? (
+                <p className="notes-item" style={{ marginTop: 4 }}>
+                  Waking the server — this can take up to a minute on the free tier.{" "}
+                  <Link
+                    href="/"
+                    style={{ textDecoration: "underline", textUnderlineOffset: 4 }}
+                  >
+                    Retry
+                  </Link>
+                </p>
+              ) : notes.length === 0 ? (
+                <p className="meta" style={{ marginTop: 10 }}>
+                  No notes yet — add one below.
+                </p>
+              ) : (
+                <>
+                  <ul
+                    className="stack"
+                    style={{ gap: 10, listStyle: "none", margin: 0, padding: 0 }}
+                  >
+                    {notes.map((note) => (
+                      <li key={note.id} className="notes-item">
+                        <p style={{ margin: 0, fontWeight: 500 }}>{note.title}</p>
+                        {note.body && (
+                          <p className="meta" style={{ margin: "4px 0 0" }}>
+                            {note.body}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="meta" style={{ marginTop: 10 }}>
+                    This is a demo — note data resets periodically.
+                  </p>
+                </>
+              )}
+            </div>
+
+            <div className="demo-block">
+              <h3 className="h3" style={{ marginBottom: 16 }}>
+                Add a note
+              </h3>
+              <NoteForm />
+            </div>
+
+            <div className="demo-block">
+              <h3 className="h3" style={{ marginBottom: 16 }}>
+                Ask about my notes
+              </h3>
+              <AskBox />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section" data-od-id="stack">
+        <div className="container stack" style={{ gap: 48 }}>
+          <div style={{ maxWidth: "40ch" }}>
+            <p className="eyebrow">How it&apos;s built</p>
+            <h2 className="h2">Three pieces, one small app.</h2>
+          </div>
+          <div className="grid-3">
+            <div className="feature">
+              <div className="feature-mark">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M9 6 3 12l6 6M15 6l6 6-6 6" />
                 </svg>
               </div>
-              <div>
-                <p className="font-medium">Frontend</p>
-                <p className="text-sm text-[var(--color-muted)]">
-                  Next.js 16 App Router, React 19, TypeScript. Server-rendered notes list, deployed on Vercel.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-3">
-              <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--radius-card)] border border-[var(--color-border)] text-[var(--color-accent-2)]">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <h3 className="h3">Frontend</h3>
+              <p>
+                Next.js 16 App Router, React 19, TypeScript. Server-rendered notes list,
+                deployed on Vercel.
+              </p>
+            </div>
+            <div className="feature">
+              <div className="feature-mark alt">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <rect x="4" y="4" width="16" height="6" rx="1.5" />
                   <rect x="4" y="14" width="16" height="6" rx="1.5" />
                   <path d="M8 7h.01M8 17h.01" />
                 </svg>
               </div>
-              <div>
-                <p className="font-medium">Backend</p>
-                <p className="text-sm text-[var(--color-muted)]">
-                  FastAPI on Render, rate-limited writes, no CORS — the Next.js layer is the only caller.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-3">
-              <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--radius-card)] border border-[var(--color-border)] text-[var(--color-accent)]">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <h3 className="h3">Backend</h3>
+              <p>
+                FastAPI on Render, rate-limited writes, no CORS — the Next.js layer is the only
+                caller.
+              </p>
+            </div>
+            <div className="feature">
+              <div className="feature-mark">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4c-1.2 0-2.4-.3-3.4-.8L4 20l1-4.8a8.3 8.3 0 0 1-.9-3.7A8.4 8.4 0 0 1 12.6 3 8.4 8.4 0 0 1 21 11.5Z" />
                   <path d="M9 11h.01M12 11h.01M15 11h.01" />
                 </svg>
               </div>
-              <div>
-                <p className="font-medium">Q&amp;A</p>
-                <p className="text-sm text-[var(--color-muted)]">
-                  POST /ask calls the Gemini API, grounded only in the notes you&apos;ve saved — nothing else.
-                </p>
-              </div>
-            </li>
-          </ul>
-          <p className="text-xs text-[var(--color-muted)]">21 tests · CI runs on every push via GitHub Actions.</p>
-        </section>
-      </main>
-    </div>
+              <h3 className="h3">Q&amp;A</h3>
+              <p>
+                POST /ask calls the Gemini API, grounded only in the notes you&apos;ve saved —
+                nothing else.
+              </p>
+            </div>
+          </div>
+          <p className="meta" style={{ textAlign: "center" }}>
+            21 tests · CI runs on every push via GitHub Actions.
+          </p>
+        </div>
+      </section>
+    </main>
   );
 }

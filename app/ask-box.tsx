@@ -48,11 +48,7 @@ export function AskBox() {
           disabled={isPending}
           className="w-full rounded-[var(--radius-card)] border border-[var(--color-border)] bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--color-accent)]"
         />
-        <button
-          type="submit"
-          disabled={isPending}
-          className="self-start rounded-[var(--radius-card)] bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-[var(--color-on-accent)] transition-colors hover:bg-[color-mix(in_oklch,var(--color-accent)_88%,black)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-accent)] focus-visible:outline-offset-2 disabled:opacity-50"
-        >
+        <button type="submit" disabled={isPending} className="btn btn-primary self-start">
           {isPending ? "Asking…" : "Ask"}
         </button>
       </form>

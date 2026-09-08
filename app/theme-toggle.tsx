@@ -30,7 +30,7 @@ export function ThemeToggle() {
       aria-label="Toggle dark mode"
       aria-pressed={isDark}
       suppressHydrationWarning
-      className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-[var(--color-foreground)] hover:border-current focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-accent)] focus-visible:outline-offset-2"
+      className="icon-btn"
     >
       <svg
         className="theme-icon-sun"
