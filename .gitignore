@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# résumé PDF holds personal data; served in prod from an off-repo copy (RESUME_URL)
+/public/resume.pdf
+
 # debug
 npm-debug.log*
 yarn-debug.log*

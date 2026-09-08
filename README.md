@@ -63,6 +63,13 @@ For a production build: `pnpm build`, then `pnpm start`.
 - `BFF_SHARED_SECRET` — sent as `X-BFF-Secret` on backend requests, if set.
 - `NEXT_PUBLIC_SITE_URL` — used as `metadataBase` for OG tags. Defaults to
   `http://localhost:3000`.
+- `RESUME_URL` — direct URL (must answer `200` with the file, not a redirect)
+  that `/resume` is rewritten to. Read at build time by `next.config.ts`, so
+  it must be set in Vercel *before* deploying — with it unset, `/resume` falls
+  back to `public/resume.pdf`, which is git-ignored and therefore absent in a
+  clean checkout, so production would 404. Locally, either set it or keep a
+  copy at `public/resume.pdf`. The PDF is kept out of the repo (personal data)
+  and lives in Vercel Blob instead.
 
 ## Operating this
 
@@ -70,7 +77,11 @@ Notes for running the live deployment unattended over long stretches (e.g.
 between interviews):
 
 - **Env vars:** Render — `GEMINI_API_KEY`, `BFF_SHARED_SECRET`. Vercel —
-  `API_BASE_URL`, `BFF_SHARED_SECRET`.
+  `API_BASE_URL`, `BFF_SHARED_SECRET`, `RESUME_URL`.
+- **Update the résumé:** upload the new PDF in the Vercel dashboard
+  (Storage → Blob), then point `RESUME_URL` at its URL and redeploy. The
+  file is deliberately not in the repo — `next.config.ts` rewrites `/resume`
+  to `RESUME_URL`.
 - **Spend cap:** the app-side `slowapi` limit on `/ask` (shared with
   `POST /notes`) is the hard bound. Also: Google Cloud console → IAM & Admin →
   Quotas → the Gemini API request override; Billing → Budgets & alerts
