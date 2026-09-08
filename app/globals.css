@@ -1,26 +1,447 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: oklch(99% 0.002 240);
+  --surface: oklch(100% 0 0);
+  --foreground: oklch(18% 0.012 250);
+  --muted: oklch(54% 0.012 250);
+  --border: oklch(92% 0.005 250);
+  --accent: oklch(68% 0.17 55);
+  --accent-2: oklch(60% 0.14 155);
+  /* darker amber for direct-text use — --accent itself is too light for AA text contrast on --background */
+  --accent-text: oklch(50% 0.17 55);
+  /* darker emerald for direct-text use on --accent-2-soft — same reasoning as --accent-text */
+  --accent-2-text: oklch(45% 0.13 155);
+  /* fixed dark text for content sitting on the --accent swatch (buttons); --accent is light in both themes */
+  --on-accent: oklch(20% 0.03 55);
+
+  --accent-soft: color-mix(in oklch, var(--accent) 14%, transparent);
+  --accent-2-soft: color-mix(in oklch, var(--accent-2) 14%, transparent);
+
+  /* named --ff-* so they don't collide with Tailwind's own --font-* theme keys in @theme inline */
+  --ff-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+  --ff-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  --ff-mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+
+  --fs-h1: clamp(40px, 5.6vw, 68px);
+  --fs-h2: clamp(30px, 3.6vw, 42px);
+  --fs-h3: 20px;
+  --fs-lead: 19px;
+  --fs-meta: 13px;
+
+  --gap-sm: 12px;
+  --gap-md: 20px;
+  --gap-lg: 32px;
+  --gap-xl: 56px;
+  --gap-2xl: 96px;
+  --container: 1120px;
+  --gutter: 32px;
+
+  --radius-card: 0.625rem;
+  --radius-lg: 16px;
+}
+
+[data-theme="dark"] {
+  --background: oklch(16% 0.012 250);
+  --surface: oklch(21% 0.014 250);
+  --foreground: oklch(96% 0.004 240);
+  --muted: oklch(68% 0.014 250);
+  --border: oklch(31% 0.016 250);
+  --accent: oklch(74% 0.15 55);
+  --accent-2: oklch(68% 0.13 155);
+  /* --accent / --accent-2 already pass AA as text against the dark background here */
+  --accent-text: oklch(74% 0.15 55);
+  --accent-2-text: oklch(68% 0.13 155);
+}
+
+/* no-JS fallback only — the theme-init script normally sets [data-theme] before paint */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --background: oklch(16% 0.012 250);
+    --surface: oklch(21% 0.014 250);
+    --foreground: oklch(96% 0.004 240);
+    --muted: oklch(68% 0.014 250);
+    --border: oklch(31% 0.016 250);
+    --accent: oklch(74% 0.15 55);
+    --accent-2: oklch(68% 0.13 155);
+    --accent-text: oklch(74% 0.15 55);
+    --accent-2-text: oklch(68% 0.13 155);
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-text: var(--accent-text);
+  --color-on-accent: var(--on-accent);
+  --color-border: var(--border);
+  --radius-card: var(--radius-card);
+  --font-sans: var(--ff-body);
+  --font-mono: var(--ff-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* offset in-page #demo jumps so the sticky topnav doesn't cover the heading */
+  scroll-padding-top: 72px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--ff-body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+}
+p {
+  text-wrap: pretty;
+}
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+
+/* theme-toggle icon swap — driven by [data-theme] on <html>, set in layout.tsx */
+.theme-icon-moon {
+  display: none;
+}
+[data-theme="dark"] .theme-icon-sun {
+  display: none;
+}
+[data-theme="dark"] .theme-icon-moon {
+  display: block;
+}
+
+/* ─── layout primitives ──────────────────────────────────────────────── */
+.container {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.section {
+  padding-block: clamp(48px, 8vw, var(--gap-2xl));
+}
+.section + .section {
+  border-top: 1px solid var(--border);
+}
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+.stack > * + * {
+  margin-top: var(--gap-md);
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-md);
+}
+.row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-md);
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap-lg);
+}
+@media (max-width: 920px) {
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── type ───────────────────────────────────────────────────────────── */
+.h1 {
+  font-family: var(--ff-display);
+  font-size: var(--fs-h1);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.h2 {
+  font-family: var(--ff-display);
+  font-size: var(--fs-h2);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+.h3 {
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+  margin: 0;
+}
+.lead {
+  font-size: var(--fs-lead);
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 60ch;
+  margin: 0;
+}
+.eyebrow {
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+  margin: 0 0 var(--gap-md);
+}
+.meta {
+  font-family: var(--ff-mono);
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+/* ─── chrome ─────────────────────────────────────────────────────────── */
+.topnav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in oklch, var(--background) 92%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.topnav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 14px;
+  gap: var(--gap-md);
+}
+.topnav .logo {
+  font-family: var(--ff-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.topnav nav {
+  display: flex;
+  gap: var(--gap-lg);
+}
+.topnav nav a {
+  font-size: 14px;
+  color: var(--muted);
+}
+.topnav nav a:hover {
+  color: var(--foreground);
+}
+@media (max-width: 640px) {
+  .topnav nav {
+    display: none;
+  }
+}
+
+.pagefoot {
+  padding-block: var(--gap-xl);
+  color: var(--muted);
+  font-size: 13px;
+  border-top: 1px solid var(--border);
+}
+.pagefoot .row-between {
+  flex-wrap: wrap;
+  gap: var(--gap-md);
+}
+/* the topnav links are hidden < 640px — surface them here so source/résumé stay reachable on mobile */
+.pagefoot-links {
+  display: none;
+}
+@media (max-width: 640px) {
+  .pagefoot-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-md);
+    width: 100%;
+    font-size: 13px;
+  }
+  .pagefoot-links a:hover {
+    color: var(--foreground);
+  }
+}
+
+/* ─── buttons ────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: var(--radius-card);
+  border: 1px solid transparent;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  transition: transform 0.05s ease, background 0.15s ease, border-color 0.15s ease,
+    color 0.15s ease, box-shadow 0.15s ease;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--accent);
+}
+.btn-primary:hover {
+  /* --on-accent is dark text, so darkening the fill (the reference's move) would
+     drop text contrast below AA. Keep the fill; signal hover with a glow instead. */
+  box-shadow: 0 2px 12px color-mix(in oklch, var(--accent) 45%, transparent);
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--foreground);
+  border-color: var(--border);
+}
+.btn-secondary:hover {
+  border-color: var(--foreground);
+}
+.hero-cta {
+  display: inline-flex;
+  gap: var(--gap-sm);
+  flex-wrap: wrap;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--foreground);
+  flex: none;
+}
+.icon-btn:hover {
+  border-color: var(--foreground);
+}
+.icon-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.icon-btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* ─── surfaces ───────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.feature .feature-mark {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--accent-text);
+  margin-bottom: var(--gap-md);
+}
+.feature .feature-mark.alt {
+  color: var(--accent-2-text);
+}
+.feature .feature-mark svg {
+  width: 18px;
+  height: 18px;
+}
+.feature h3 {
+  margin-bottom: 6px;
+}
+.feature p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+.tag-accent2 {
+  border-color: transparent;
+  background: var(--accent-2-soft);
+  color: var(--accent-2-text);
+}
+
+.demo-block {
+  padding: 28px;
+}
+.demo-block + .demo-block {
+  border-top: 1px solid var(--border);
+}
+.notes-item {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+.hero {
+  padding-block: clamp(72px, 10vw, 128px);
+  text-align: center;
+}
+.hero-center {
+  max-width: 900px;
+  margin-inline: auto;
+}
+.hero-center .lead {
+  max-width: 52ch;
+  margin-inline: auto;
+}
+.hero .h1 {
+  margin-bottom: var(--gap-md);
+}
+.hero .lead {
+  margin: 0 auto var(--gap-lg);
+}
+.hero-center .hero-cta {
+  justify-content: center;
 }
